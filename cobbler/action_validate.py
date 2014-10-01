@@ -1,5 +1,5 @@
 """
-Validates rendered kickstart files.
+Validates rendered automatic OS installation files.
 
 Copyright 2007-2009, Red Hat, Inc and Others
 Michael DeHaan <michael.dehaan AT gmail>
@@ -64,9 +64,9 @@ class Validate:
                 self.log_errors(errors)
 
         if failed:
-            self.logger.warning("*** potential errors detected in kickstarts ***")
+            self.logger.warning("*** potential errors detected in automatic installation files ***")
         else:
-            self.logger.info("*** all kickstarts seem to be ok ***")
+            self.logger.info("*** all automatic installation files seem to be ok ***")
 
         return not(failed)
 
@@ -79,9 +79,9 @@ class Validate:
         self.logger.info("----------------------------")
         self.logger.debug("osversion: %s" % os_version)
 
-        ks = blended["kickstart"]
+        ks = blended["autoinst"]
         if ks is None or ks == "":
-            self.logger.info("%s has no kickstart, skipping" % obj.name)
+            self.logger.info("%s has no autoinst, skipping" % obj.name)
             return [True, last_errors]
 
         breed = blended["breed"]
@@ -94,11 +94,11 @@ class Validate:
             url = ks
         else:
             if is_profile:
-                url = "http://%s/cblr/svc/op/ks/profile/%s" % (server, obj.name)
-                self.kickgen.generate_kickstart_for_profile(obj.name)
+                url = "http://%s/cblr/svc/op/autoinst/profile/%s" % (server, obj.name)
+                self.kickgen.generate_autoinstall_for_profile(obj.name)
             else:
-                url = "http://%s/cblr/svc/op/ks/system/%s" % (server, obj.name)
-                self.kickgen.generate_kickstart_for_system(obj.name)
+                url = "http://%s/cblr/svc/op/autoinst/system/%s" % (server, obj.name)
+                self.kickgen.generate_autoinstall_for_system(obj.name)
             last_errors = self.kickgen.get_last_errors()
 
         self.logger.info("checking url: %s" % url)

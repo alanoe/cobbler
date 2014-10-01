@@ -35,11 +35,11 @@ FIELDS = [
     ["status", "production", 0, "Status", True, "System status", ["", "development", "testing", "acceptance", "production"], "str"],
     ["kernel_options", {}, 0, "Kernel Options", True, "Ex: selinux=permissive", 0, "dict"],
     ["kernel_options_post", {}, 0, "Kernel Options (Post Install)", True, "Ex: clocksource=pit noapic", 0, "dict"],
-    ["ks_meta", {}, 0, "Kickstart Metadata", True, "Ex: dog=fang agent=86", 0, "dict"],
+    ["autoinstall_meta", {}, 0, "Automatic Installation Template Metadata", True, "Ex: dog=fang agent=86", 0, "dict"],
     ["enable_gpxe", "SETTINGS:enable_gpxe", 0, "Enable gPXE?", True, "Use gPXE instead of PXELINUX for advanced booting options", 0, "bool"],
     ["proxy", "<<inherit>>", 0, "Proxy", True, "Proxy URL", 0, "str"],
     ["netboot_enabled", True, 0, "Netboot Enabled", True, "PXE (re)install this machine at next boot?", 0, "bool"],
-    ["kickstart", "<<inherit>>", 0, "Kickstart", True, "Path to kickstart template", 0, "str"],
+    ["autoinst", "<<inherit>>", 0, "Automatic Installation Template", True, "Path to automatic installation template", 0, "str"],
     ["comment", "", 0, "Comment", True, "Free form text description", 0, "str"],
     ["server", "<<inherit>>", 0, "Server Override", True, "See manpage or leave blank", 0, "str"],
     ["next_server", "<<inherit>>", 0, "Next Server Override", True, "See manpage or leave blank", 0, "str"],
@@ -112,7 +112,7 @@ class System(item.Item):
         self.interfaces = dict()
         self.kernel_options = {}
         self.kernel_options_post = {}
-        self.ks_meta = {}
+        self.autoinstall_meta = {}
         self.fetchable_files = {}
         self.boot_files = {}
         self.template_files = {}
@@ -657,8 +657,8 @@ class System(item.Item):
         who are PXE booting first in the boot order won't create system definitions, so this
         feature primarily comes into play for programmatic users of the API, who want to
         initially create a system with netboot enabled and then disable it after the system installs,
-        as triggered by some action in kickstart %post.   For this reason, this option is not
-        surfaced in the CLI, output, or documentation (yet).
+        as triggered by some action in automatic installation file's  %post section.
+        For this reason, this option is not urfaced in the CLI, output, or documentation (yet).
 
         Use of this option does not affect the ability to use PXE menus.  If an admin has machines
         set up to PXE only after local boot fails, this option isn't even relevant.
@@ -666,14 +666,14 @@ class System(item.Item):
         self.netboot_enabled = utils.input_boolean(netboot_enabled)
 
 
-    def set_kickstart(self, kickstart):
+    def set_autoinst(self, autoinst):
         """
-        Set the kickstart path, this must be a local file.
+        Set the automatic installation template filepath, this must be a local file.
 
-        @param: str kickstart path to a local kickstart file
+        @param: str automatic installation template file path (local file in server)
         @returns: True or CX
         """
-        self.kickstart = validate.kickstart_file_path(kickstart)
+        self.autoinst = validate.autoinstall_file_path(autoinst)
 
 
     def set_power_type(self, power_type):

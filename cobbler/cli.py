@@ -238,7 +238,7 @@ def add_options_from_fields(object_type, parser, fields, object_action):
 
         if object_action not in ["find"] and object_type != "setting":
             parser.add_option("--clobber", dest="clobber", help="allow add to overwrite existing objects", action="store_true")
-            parser.add_option("--in-place", action="store_true", default=False, dest="in_place", help="edit items in kopts or ksmeta without clearing the other items")
+            parser.add_option("--in-place", action="store_true", default=False, dest="in_place", help="edit items in kopts or autoinstall without clearing the other items")
 
     elif object_action == "remove":
         parser.add_option("--name", help="%s name to remove" % object_type)
@@ -459,9 +459,9 @@ class CobblerCLI:
                     sys.exit(1)
             elif object_action == "getks":
                 if object_type == "profile":
-                    data = self.remote.generate_kickstart(options.name, "")
+                    data = self.remote.generate_autoinst(options.name, "")
                 elif object_type == "system":
-                    data = self.remote.generate_kickstart("", options.name)
+                    data = self.remote.generate_autoinst("", options.name)
                 print data
             elif object_action == "dumpvars":
                 if object_type == "profile":
@@ -578,7 +578,7 @@ class CobblerCLI:
             self.parser.add_option("--path", dest="path", help="local path or rsync location")
             self.parser.add_option("--name", dest="name", help="name, ex 'RHEL-5'")
             self.parser.add_option("--available-as", dest="available_as", help="tree is here, don't mirror")
-            self.parser.add_option("--kickstart", dest="kickstart_file", help="assign this kickstart file")
+            self.parser.add_option("--autoinst", dest="autoinstall_file", help="assign this autoinst file")
             self.parser.add_option("--rsync-flags", dest="rsync_flags", help="pass additional flags to rsync")
             (options, args) = self.parser.parse_args()
             task_id = self.start_task("import", options)

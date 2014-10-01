@@ -34,10 +34,10 @@ FIELDS = [
     ["parent", '', '', "Parent Profile", True, "", [], "str"],
     ["enable_gpxe", "SETTINGS:enable_gpxe", 0, "Enable gPXE?", True, "Use gPXE instead of PXELINUX for advanced booting options", 0, "bool"],
     ["enable_menu", "SETTINGS:enable_menu", '<<inherit>>', "Enable PXE Menu?", True, "Show this profile in the PXE menu?", 0, "bool"],
-    ["kickstart", "SETTINGS:default_kickstart", '<<inherit>>', "Kickstart", True, "Path to kickstart template", 0, "str"],
+    ["autoinst", "SETTINGS:default_autoinst", '<<inherit>>', "Automatic Installation Template", True, "Path to automatic installation template", 0, "str"],
     ["kernel_options", {}, '<<inherit>>', "Kernel Options", True, "Ex: selinux=permissive", 0, "dict"],
     ["kernel_options_post", {}, '<<inherit>>', "Kernel Options (Post Install)", True, "Ex: clocksource=pit noapic", 0, "dict"],
-    ["ks_meta", {}, '<<inherit>>', "Kickstart Metadata", True, "Ex: dog=fang agent=86", 0, "dict"],
+    ["autoinstall_meta", {}, '<<inherit>>', "Automatic Installation Metadata", True, "Ex: dog=fang agent=86", 0, "dict"],
     ["proxy", "", None, "Proxy", True, "Proxy URL", 0, "str"],
     ["repos", [], '<<inherit>>', "Repos", True, "Repos to auto-assign to this profile", [], "list"],
     ["comment", "", "", "Comment", True, "Free form text description", 0, "str"],
@@ -77,7 +77,7 @@ class Profile(item.Item):
         super(Profile, self).__init__(*args, **kwargs)
         self.kernel_options = {}
         self.kernel_options_post = {}
-        self.ks_meta = {}
+        self.autoinstall_meta = {}
         self.fetchable_files = {}
         self.boot_files = {}
         self.template_files = {}
@@ -227,14 +227,15 @@ class Profile(item.Item):
         else:
             self.next_server = validate.ipv4_address(server)
 
-    def set_kickstart(self, kickstart):
+    def set_autoinst(self, autoinst):
         """
-        Set the kickstart path, this must be a local file.
+        Set the automatic OS installation template file path,
+        this must be a local file.
 
-        @param: str kickstart path to a local kickstart file
+        @param: str autoinst path to a local autoinst file
         @returns: True or CX
         """
-        self.kickstart = validate.kickstart_file_path(kickstart)
+        self.autoinst = validate.autoinstall_file_path(autoinst)
 
     def set_virt_auto_boot(self, num):
         utils.set_virt_auto_boot(self, num)

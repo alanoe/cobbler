@@ -25,7 +25,7 @@ import shlex
 from cobbler.cexceptions import CX
 
 
-KICKSTART_TEMPLATE_BASE_DIR = "/var/lib/cobbler/kickstarts/"
+AUTOINSTALL_TEMPLATE_BASE_DIR = "/var/lib/cobbler/autoinsts/"
 SNIPPET_TEMPLATE_BASE_DIR = "/var/lib/cobbler/snippets/"
 
 RE_OBJECT_NAME = re.compile(r'[a-zA-Z0-9_\-.:]*$')
@@ -35,8 +35,8 @@ REPO_BREEDS = ["rsync", "rhn", "yum", "apt", "wget"]
 
 VIRT_TYPES = ["<<inherit>>", "xenpv", "xenfv", "qemu", "kvm", "vmware", "openvz"]
 
-# blacklist invalid values to the repo statement in kickstarts
-KICKSTART_REPO_BLACKLIST = ['enabled', 'gpgcheck', 'gpgkey']
+# blacklist invalid values to the repo statement in autoinsts
+AUTOINSTALL_REPO_BLACKLIST = ['enabled', 'gpgcheck', 'gpgkey']
 
 
 def object_name(name, parent):
@@ -87,40 +87,40 @@ def snippet_file_path(snippet, new_snippet=False):
     return snippet
 
 
-def kickstart_file_path(kickstart, for_item=True, new_kickstart=False):
+def autoinstall_file_path(autoinst, for_item=True, new_autoinst=False):
     """
-    Validate the kickstart file path.
+    Validate the autoinst file path.
 
-    @param: str kickstart (absolute path to a local kickstart file)
+    @param: str autoinst (absolute path to a local autoinst file)
     @param: bool for_item (enable/disable special handling for Item objects)
-    @param: bool new_kickstart (when set to true new filenames are allowed)
-    @returns: str kickstart or CX
+    @param: bool new_autoinst (when set to true new filenames are allowed)
+    @returns: str autoinst or CX
     """
-    if not isinstance(kickstart, basestring):
-        raise CX("Invalid input, kickstart must be a string")
+    if not isinstance(autoinst, basestring):
+        raise CX("Invalid input, autoinst must be a string")
     else:
-        kickstart = kickstart.strip()
+        autoinst = autoinst.strip()
 
-    if kickstart == "":
-        # empty kickstart is allowed (interactive installations)
-        return kickstart
+    if autoinst == "":
+        # empty autoinst is allowed (interactive installations)
+        return autoinst
 
     if for_item is True:
-        # this kickstart value has special meaning for Items
+        # this autoinst value has special meaning for Items
         # other callers of this function have no use for this
-        if kickstart == "<<inherit>>":
-            return kickstart
+        if autoinst == "<<inherit>>":
+            return autoinst
 
-    if kickstart.find("..") != -1:
-        raise CX("Invalid kickstart template file location %s, must be absolute path" % kickstart)
+    if autoinst.find("..") != -1:
+        raise CX("Invalid automatic installation template file location %s, must be absolute path" % autoinst)
 
-    if not kickstart.startswith(KICKSTART_TEMPLATE_BASE_DIR):
-        raise CX("Invalid kickstart template file location %s, it is not inside %s" % (kickstart, KICKSTART_TEMPLATE_BASE_DIR))
+    if not autoinst.startswith(AUTOINSTALL_TEMPLATE_BASE_DIR):
+        raise CX("Invalid automatic installation template file location %s, it is not inside %s" % (autoinst, AUTOINSTALL_TEMPLATE_BASE_DIR))
 
-    if not os.path.isfile(kickstart) and not new_kickstart:
-        raise CX("Invalid kickstart template file location %s, file not found" % kickstart)
+    if not os.path.isfile(autoinst) and not new_autoinst:
+        raise CX("Invalid automatic installation template file location %s, file not found" % autoinst)
 
-    return kickstart
+    return autoinst
 
 
 def hostname(dnsname):

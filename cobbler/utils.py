@@ -632,7 +632,7 @@ def blender(api_handle, remove_dicts, root_obj):
         results["http_server"] = results["server"]
 
     mgmt_parameters = results.get("mgmt_parameters", {})
-    mgmt_parameters.update(results.get("ks_meta", {}))
+    mgmt_parameters.update(results.get("autoinstall_meta", {}))
     results["mgmt_parameters"] = mgmt_parameters
 
     # sanitize output for koan and kernel option lines, etc
@@ -685,8 +685,8 @@ def flatten(data):
         data["kernel_options_post"] = dict_to_string(data["kernel_options_post"])
     if "yumopts" in data:
         data["yumopts"] = dict_to_string(data["yumopts"])
-    if "ks_meta" in data:
-        data["ks_meta"] = dict_to_string(data["ks_meta"])
+    if "autoinstall_meta" in data:
+        data["autoinstall_meta"] = dict_to_string(data["autoinstall_meta"])
     if "template_files" in data:
         data["template_files"] = dict_to_string(data["template_files"])
     if "boot_files" in data:
@@ -770,7 +770,7 @@ def __consolidate(node, results):
 
     dict_removals(results, "kernel_options")
     dict_removals(results, "kernel_options_post")
-    dict_removals(results, "ks_meta")
+    dict_removals(results, "autoinstall_meta")
     dict_removals(results, "template_files")
     dict_removals(results, "boot_files")
     dict_removals(results, "fetchable_files")
@@ -1516,21 +1516,21 @@ def set_virt_cpus(self, num):
     self.virt_cpus = num
 
 
-def get_kickstart_templates(api):
+def get_autoinstall_templates(api):
     """
-    Return a list of all kickstarts in use and available
-    under /var/lib/cobbler/kickstarts/
+    Return a list of all automatic OS installation templates in use and
+    available under /var/lib/cobbler/autoinsts/
     """
     files = {}
     for x in api.profiles():
-        if x.kickstart is not None and x.kickstart != "" and x.kickstart != "<<inherit>>":
-            if os.path.isfile(x.kickstart):
-                files[x.kickstart] = 1
+        if x.autoinst is not None and x.autoinst != "" and x.autoinst != "<<inherit>>":
+            if os.path.isfile(x.autoinst):
+                files[x.autoinst] = 1
     for x in api.systems():
-        if x.kickstart is not None and x.kickstart != "" and x.kickstart != "<<inherit>>":
-            if os.path.isfile(x.kickstart):
-                files[x.kickstart] = 1
-    for x in glob.glob("/var/lib/cobbler/kickstarts/*"):
+        if x.autoinst is not None and x.autoinst != "" and x.autoinst != "<<inherit>>":
+            if os.path.isfile(x.autoinst):
+                files[x.autoinst] = 1
+    for x in glob.glob("/var/lib/cobbler/autoinsts/*"):
         if os.path.isfile(x):
             files[x] = 1
 
